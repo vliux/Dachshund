@@ -2,6 +2,7 @@ package com.vliux.dachshund;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,13 +12,14 @@ import java.util.HashMap;
  * Created by vliux on 12/6/13.
  */
 public class DbManager {
+    public static final String TAG = "Dachshund";
     private static DbManager sInstance;
 
     private Context mAppContext;
     private DbHelper mDbHelper;
     private HashMap<Class<BaseDbTable>, BaseDbTable> mDbTables;
 
-    public static DbManager init(Context appContext, Class<BaseDbTable>[] dbTableClasses)
+    public static DbManager init(Context appContext, Class[] dbTableClasses)
             throws InstantiationException {
         if(null == dbTableClasses || dbTableClasses.length <= 0){
             throw new IllegalArgumentException("none of BaseDbTable class is registered");
@@ -39,12 +41,13 @@ public class DbManager {
         return sInstance;
     }
 
-    private DbManager(Context appContext, Class<BaseDbTable>[] dbTableClasses) throws InstantiationException {
+    private DbManager(Context appContext, Class[] dbTableClasses) throws InstantiationException {
         mAppContext = appContext;
         mDbHelper = new DbHelper(mAppContext);
-        for(Class<BaseDbTable> tableClz : dbTableClasses){
+        mDbTables = new HashMap<Class<BaseDbTable>, BaseDbTable>();
+        for(Class tableClz : dbTableClasses){
             try {
-                Constructor constructor = tableClz.getDeclaredConstructor(DbHelper.class);
+                Constructor constructor = tableClz.getDeclaredConstructor(new Class[]{SQLiteOpenHelper.class});
                 mDbTables.put(tableClz, (BaseDbTable) constructor.newInstance(mDbHelper));
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
@@ -69,14 +72,14 @@ public class DbManager {
         mDbHelper.setDbTables(mDbTables.values().toArray(new BaseDbTable[0]));
     }
 
-    public DbManager getsInstance(){
-        if(null == mAppContext){
+    public static DbManager getsInstance(){
+        if(null == sInstance){
             throw new IllegalStateException("must call init() first");
         }
         return sInstance;
     }
 
-    public BaseDbTable getTable(Class<BaseDbTable> tableClass){
+    public BaseDbTable getTable(Class tableClass){
         return mDbTables.get(tableClass);
     }
 }

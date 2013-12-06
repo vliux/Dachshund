@@ -7,9 +7,7 @@ package com.vliux.dachshund;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.util.Log;
 
 class DbHelper extends SQLiteOpenHelper {
     public static final int DB_VER = 1;
@@ -26,8 +24,10 @@ class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        Log.d(DbManager.TAG, "onCreate()");
         for (BaseDbTable table : mTables) {
             String sql = table.getCreateSql();
+            Log.d(DbManager.TAG, sql);
             if (null != sql && sql.length() > 0) {
                 sqLiteDatabase.execSQL(sql);
                 table.onTableCreated(sqLiteDatabase);
@@ -37,8 +37,10 @@ class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVer, int newVer) {
+        Log.d(DbManager.TAG, "onUpgrade()");
         for (BaseDbTable table : mTables) {
             String sql = table.getUpdateSql(oldVer, newVer);
+            Log.d(DbManager.TAG, sql);
             if (null != sql && sql.length() > 0) {
                 sqLiteDatabase.execSQL(sql);
             }

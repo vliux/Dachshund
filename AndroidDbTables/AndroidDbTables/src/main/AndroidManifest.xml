@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vliux.dachshund"
+    package="com.vliux.dachshundsample"
     android:versionCode="1"
     android:versionName="1.0">
 
@@ -10,6 +10,12 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
