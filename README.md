@@ -5,6 +5,7 @@ A simple framework of Android Sqlite DB which supports table creation and upgrad
 
 How to use?
 Step 1. Override BaseDbTable:
+
     public class MyDbTable extends BaseDbTable{
         private static final String DB_COL_<column-identifier>_<data-type>_<min-version> = "<column-name-in-db>";
         // for example:
@@ -21,9 +22,11 @@ Step 1. Override BaseDbTable:
     }
     
 Step 2. Init DbManager:
+
     DbManager dbManager = DbManager.init(getContext().getApplicationContext(), new Class<BaseDbTable>[]{MyDbTable.class});
     
 Step 3. Use your table:
+
     MyDbTable dbTable = (MyDbTable)dbManager.getTable(MyDbTable.class);
     dbTable.addSomething();
     
