@@ -10,12 +10,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 class DbHelper extends SQLiteOpenHelper {
-    public static final int DB_VER = 1;
-    public static final String DB_NAME = "adi.collie.db";
     private BaseDbTable[] mTables;
 
-    public DbHelper(Context context) {
-        super(context, DB_NAME, null, DB_VER);
+    public DbHelper(Context context, String dbName, int dbVersion) {
+        super(context, dbName, null, dbVersion);
     }
 
     public void setDbTables(BaseDbTable[] dbTables) {
@@ -27,7 +25,6 @@ class DbHelper extends SQLiteOpenHelper {
         Log.d(DbManager.TAG, "onCreate()");
         for (BaseDbTable table : mTables) {
             String sql = table.getCreateSql();
-            Log.d(DbManager.TAG, sql);
             if (null != sql && sql.length() > 0) {
                 sqLiteDatabase.execSQL(sql);
                 table.onTableCreated(sqLiteDatabase);
@@ -39,10 +36,11 @@ class DbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVer, int newVer) {
         Log.d(DbManager.TAG, "onUpgrade()");
         for (BaseDbTable table : mTables) {
-            String sql = table.getUpdateSql(oldVer, newVer);
-            Log.d(DbManager.TAG, sql);
-            if (null != sql && sql.length() > 0) {
-                sqLiteDatabase.execSQL(sql);
+            String[] sqls = table.getUpdateSql(oldVer, newVer);
+            for(String sql : sqls){
+                if (null != sql && sql.length() > 0) {
+                    sqLiteDatabase.execSQL(sql);
+                }
             }
         }
     }

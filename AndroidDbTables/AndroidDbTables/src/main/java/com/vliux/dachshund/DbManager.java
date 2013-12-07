@@ -19,7 +19,16 @@ public class DbManager {
     private DbHelper mDbHelper;
     private HashMap<Class<BaseDbTable>, BaseDbTable> mDbTables;
 
-    public static DbManager init(Context appContext, Class[] dbTableClasses)
+    /**
+     * Initialize the database manager.
+     * @param appContext the application context (should not be Activity)
+     * @param dbTableClasses list of db table classes
+     * @param dbName name of database
+     * @param dbVersion current version of database
+     * @return
+     * @throws InstantiationException
+     */
+    public static DbManager init(Context appContext, Class[] dbTableClasses, String dbName, int dbVersion)
             throws InstantiationException {
         if(null == dbTableClasses || dbTableClasses.length <= 0){
             throw new IllegalArgumentException("none of BaseDbTable class is registered");
@@ -34,16 +43,16 @@ public class DbManager {
         if(null == sInstance){
             synchronized (DbManager.class){
                 if(null == sInstance){
-                    sInstance = new DbManager(appContext, dbTableClasses);
+                    sInstance = new DbManager(appContext, dbTableClasses, dbName, dbVersion);
                 }
             }
         }
         return sInstance;
     }
 
-    private DbManager(Context appContext, Class[] dbTableClasses) throws InstantiationException {
+    private DbManager(Context appContext, Class[] dbTableClasses, String dbName, int dbVersion) throws InstantiationException {
         mAppContext = appContext;
-        mDbHelper = new DbHelper(mAppContext);
+        mDbHelper = new DbHelper(mAppContext, dbName, dbVersion);
         mDbTables = new HashMap<Class<BaseDbTable>, BaseDbTable>();
         for(Class tableClz : dbTableClasses){
             try {

@@ -19,6 +19,12 @@ public class SampleTable extends BaseDbTable {
     @DbField(columnType = "INTEGER")
     private static String columnAge = "theAge";
 
+    @DbField(columnType = "TEXT", minVersion = 2)
+    private static String columnDes = "theDesc";
+
+    @DbField(columnType = "TEXT", minVersion = 3)
+    private static String columnExtra = "theExtra";
+
     public SampleTable(SQLiteOpenHelper dbHelper) {
         super(dbHelper);
     }
@@ -29,6 +35,7 @@ public class SampleTable extends BaseDbTable {
         ContentValues cv = new ContentValues();
         cv.put(columnName, "sampleee");
         cv.put(columnAge, 1123);
+        //cv.put(columnDes, "...");
         insert(db, cv);
     }
 
@@ -36,6 +43,7 @@ public class SampleTable extends BaseDbTable {
         ContentValues cv = new ContentValues();
         cv.put(columnName, "sampleee2");
         cv.put(columnAge, 1124);
+        //cv.put(columnDes, "some description here");
         insert(cv);
     }
 }

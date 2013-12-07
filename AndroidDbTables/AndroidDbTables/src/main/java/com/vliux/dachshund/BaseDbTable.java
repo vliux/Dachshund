@@ -16,6 +16,7 @@ import com.vliux.dachshund.annotation.DbField;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -137,12 +138,24 @@ public abstract class BaseDbTable{
                     ",%s %s DEFAULT '%s'", colDef.getColumn(), colDef.getType(), colDef.getDefaultValue()));
         }
         sb.append(")");
-        Log.i(getTableName(), sb.toString());
+        Log.i(DbManager.TAG, sb.toString());
         return sb.toString();
     }
 
-    public String getUpdateSql(int oldVer, int newVer) {
-        return null;
+    public String[] getUpdateSql(int oldVer, int newVer) {
+        List<String> sqlStrList = new ArrayList<String>();
+
+        for(String colName : mColumnDefinitions.keySet()){
+            DbColumnDef dbColumnDef = mColumnDefinitions.get(colName);
+            int columnVer = dbColumnDef.getIntroducedVersion();
+            if(columnVer > oldVer && columnVer <= newVer){
+                String sqlStr = String.format("ALTER TABLE %s ADD %s %s DEFAULT '%s'",
+                        getTableName(), dbColumnDef.getColumn(), dbColumnDef.getType(), dbColumnDef.getDefaultValue());
+                sqlStrList.add(sqlStr);
+                Log.d(DbManager.TAG, "getUpdateSql(): " + sqlStr);
+            }
+        }
+        return sqlStrList.toArray(new String[0]);
     }
 
     public  abstract void onTableCreated(SQLiteDatabase db);

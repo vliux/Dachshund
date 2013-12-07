@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            DbManager.init(getApplicationContext(),new Class[]{SampleTable.class});
+            DbManager.init(getApplicationContext(),new Class[]{SampleTable.class}, "SampleDb", 3);
             SampleTable sampleTable = (SampleTable)DbManager.getsInstance().getTable(SampleTable.class);
             sampleTable.insertSomething();
         } catch (InstantiationException e) {
