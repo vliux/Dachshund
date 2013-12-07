@@ -7,13 +7,17 @@ import android.util.Log;
 
 import com.vliux.dachshund.BaseDbTable;
 import com.vliux.dachshund.DbManager;
+import com.vliux.dachshund.annotation.DbField;
 
 /**
  * Created by vliux on 12/6/13.
  */
 public class SampleTable extends BaseDbTable {
-    private static final String DB_COL_SNAME_TEXT_1 = "sName";
-    private static final String DB_COL_NUM_INT_1 = "num";
+    @DbField(columnType = "TEXT", defaultValue = "liuxin", minVersion = 1)
+    private static String columnName = "theName";
+
+    @DbField(columnType = "INTEGER")
+    private static String columnAge = "theAge";
 
     public SampleTable(SQLiteOpenHelper dbHelper) {
         super(dbHelper);
@@ -23,15 +27,15 @@ public class SampleTable extends BaseDbTable {
     public void onTableCreated(SQLiteDatabase db) {
         Log.d(DbManager.TAG, "SampleTable.onTableCreated()");
         ContentValues cv = new ContentValues();
-        cv.put(DB_COL_SNAME_TEXT_1, "sampleee");
-        cv.put(DB_COL_NUM_INT_1, 1123);
-        insert(cv);
+        cv.put(columnName, "sampleee");
+        cv.put(columnAge, 1123);
+        insert(db, cv);
     }
 
     public void insertSomething(){
         ContentValues cv = new ContentValues();
-        cv.put(DB_COL_SNAME_TEXT_1, "sampleee2");
-        cv.put(DB_COL_NUM_INT_1, 1124);
+        cv.put(columnName, "sampleee2");
+        cv.put(columnAge, 1124);
         insert(cv);
     }
 }

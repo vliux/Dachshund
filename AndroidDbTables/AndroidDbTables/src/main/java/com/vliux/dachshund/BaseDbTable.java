@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.vliux.dachshund.annotation.DbField;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +21,6 @@ import java.util.Map;
 
 public abstract class BaseDbTable{
     protected final String PRIMARY_COLUMN_NAME = "_id";
-    protected final String DB_COLUMN_PREFIX = "DB_COL_";
-    protected final int DB_COLUMN_SECTIONS = 4;
     protected HashMap<String, DbColumnDef> mColumnDefinitions = new HashMap<String, DbColumnDef>();
     private SQLiteOpenHelper mDbHelper;
 
@@ -29,6 +29,57 @@ public abstract class BaseDbTable{
         initColumns();
     }
 
+    protected void initColumns(){
+        Field[] fields = this.getClass().getFields();
+        for(Field field : fields){
+            if(field.isAnnotationPresent(DbField.class)){
+                DbField dbField = field.getAnnotation(DbField.class);
+                String columnType = dbField.columnType();
+                String defaultValue = dbField.defaultValue();
+                int minVersion = dbField.minVersion();
+                /* obtain field value as column name*/
+                String columnName = null;
+                try {
+                    columnName = (String) field.get(null);
+                } catch (IllegalAccessException e) {
+                    try {
+                        columnName = (String)field.get(this);
+                    } catch (IllegalAccessException e1) {
+                        e1.printStackTrace();
+                        IllegalArgumentException thrownExp =
+                                new IllegalArgumentException("unable to get value of field " + field.getName());
+                        thrownExp.initCause(e);
+                        throw thrownExp;
+                    }
+                }
+
+                if(null == columnType || columnType.length() <= 0){
+                    throw new IllegalArgumentException(String.format("invalid db date type %s annotated at field %s",
+                            String.valueOf(columnType), field.getName()));
+                }
+
+                if(null == columnName || columnName.length() <= 0){
+                    throw new IllegalArgumentException(String.format("invalid column name %s annotated at field %s",
+                            String.valueOf(columnName), field.getName()));
+                }
+
+                if(minVersion <= 0){
+                    throw new IllegalArgumentException(String.format("invalid minVersion %d annotated at field %s",
+                            minVersion, field.getName()));
+                }
+
+                DbColumnDef dbColumnDef = new DbColumnDef();
+                dbColumnDef.setColumn(columnName);
+                dbColumnDef.setDefaultValue(defaultValue);
+                dbColumnDef.setIntroducedVersion(minVersion);
+                dbColumnDef.setType(columnType);
+                mColumnDefinitions.put(columnName, dbColumnDef);
+
+            }
+        }
+    }
+
+    /*
     protected void initColumns() {
         Field[] fields = this.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
@@ -58,7 +109,7 @@ public abstract class BaseDbTable{
                 }
             }
         }
-    }
+    }*/
 
     public String getTableName() {
         return getClass().getSimpleName();
