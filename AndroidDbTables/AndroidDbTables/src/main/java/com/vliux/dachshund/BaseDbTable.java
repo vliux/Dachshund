@@ -30,52 +30,65 @@ public abstract class BaseDbTable{
     }
 
     protected void initColumns(){
-        Field[] fields = this.getClass().getFields();
-        for(Field field : fields){
-            if(field.isAnnotationPresent(DbField.class)){
-                DbField dbField = field.getAnnotation(DbField.class);
-                String columnType = dbField.columnType();
-                String defaultValue = dbField.defaultValue();
-                int minVersion = dbField.minVersion();
-                /* obtain field value as column name*/
-                String columnName = null;
-                try {
-                    columnName = (String) field.get(null);
-                } catch (IllegalAccessException e) {
-                    try {
-                        columnName = (String)field.get(this);
-                    } catch (IllegalAccessException e1) {
-                        e1.printStackTrace();
-                        IllegalArgumentException thrownExp =
-                                new IllegalArgumentException("unable to get value of field " + field.getName());
-                        thrownExp.initCause(e);
-                        throw thrownExp;
-                    }
-                }
-
-                if(null == columnType || columnType.length() <= 0){
-                    throw new IllegalArgumentException(String.format("invalid db date type %s annotated at field %s",
-                            String.valueOf(columnType), field.getName()));
-                }
-
-                if(null == columnName || columnName.length() <= 0){
-                    throw new IllegalArgumentException(String.format("invalid column name %s annotated at field %s",
-                            String.valueOf(columnName), field.getName()));
-                }
-
-                if(minVersion <= 0){
-                    throw new IllegalArgumentException(String.format("invalid minVersion %d annotated at field %s",
-                            minVersion, field.getName()));
-                }
-
-                DbColumnDef dbColumnDef = new DbColumnDef();
-                dbColumnDef.setColumn(columnName);
-                dbColumnDef.setDefaultValue(defaultValue);
-                dbColumnDef.setIntroducedVersion(minVersion);
-                dbColumnDef.setType(columnType);
-                mColumnDefinitions.put(columnName, dbColumnDef);
-
+        Class theClass = this.getClass();
+        while(true){
+            if(null == theClass || theClass.equals(BaseDbTable.class)){
+                break;
             }
+
+            Field[] fields = theClass.getDeclaredFields();
+            for (Field field : fields) {
+                Log.d(DbManager.TAG, "check field " + field.getName());
+                if (field.isAnnotationPresent(DbField.class)) {
+                    String fieldName = field.getName();
+                    Log.d(DbManager.TAG, String.format("field %s has DbField annotation", fieldName));
+                    DbField dbField = field.getAnnotation(DbField.class);
+                    String columnType = dbField.columnType();
+                    String defaultValue = dbField.defaultValue();
+                    int minVersion = dbField.minVersion();
+                /* obtain field value as column name*/
+                    String columnName = null;
+                    try {
+                        field.setAccessible(true);
+                        columnName = (String) field.get(null);
+                    } catch (IllegalAccessException e) {
+                        try {
+                            columnName = (String) field.get(this);
+                        } catch (IllegalAccessException e1) {
+                            e1.printStackTrace();
+                            IllegalArgumentException thrownExp =
+                                    new IllegalArgumentException("unable to get value of field " + fieldName);
+                            thrownExp.initCause(e);
+                            throw thrownExp;
+                        }
+                    }
+
+                    if (null == columnType || columnType.length() <= 0) {
+                        throw new IllegalArgumentException(String.format("invalid db date type %s annotated at field %s",
+                                String.valueOf(columnType), fieldName));
+                    }
+
+                    if (null == columnName || columnName.length() <= 0) {
+                        throw new IllegalArgumentException(String.format("invalid column name %s annotated at field %s",
+                                String.valueOf(columnName), fieldName));
+                    }
+                    Log.d(DbManager.TAG, "db columnName = " + columnName);
+
+                    if (minVersion <= 0) {
+                        throw new IllegalArgumentException(String.format("invalid minVersion %d annotated at field %s",
+                                minVersion, fieldName));
+                    }
+
+                    DbColumnDef dbColumnDef = new DbColumnDef();
+                    dbColumnDef.setColumn(columnName);
+                    dbColumnDef.setDefaultValue(defaultValue);
+                    dbColumnDef.setIntroducedVersion(minVersion);
+                    dbColumnDef.setType(columnType);
+                    mColumnDefinitions.put(columnName, dbColumnDef);
+
+                }
+            }
+            theClass = theClass.getSuperclass();
         }
     }
 
