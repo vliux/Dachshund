@@ -20,12 +20,18 @@ Step 1. Override BaseDbTable:
             // normally you can insert initial rows into table
         }
         
+        @Override
+        public void onTableUpgraded(SQLiteDatabase db, int oldVer, int newVer){
+            // callback when your db is upgraded from oldVer to newVer
+        }
+        
         // implement your additional logic below
         public void addSomething(){...}
     }
     
 Step 2. Init DbManager:
-    // dbVersion is 2, so if your app db is 1 at present, 'userAge' will be added into table by Dachshund
+
+    // here we specify dbVersion is 2, so if your current db versoin is 1, Dachshund will upgrade it to 2 by adding 'userAge' into table MyDbTable
     DbManager dbManager = DbManager.init(getContext().getApplicationContext(), new Class<BaseDbTable>[]{MyDbTable.class}, "myDataBase", 2);
     
 Step 3. Use your table:
