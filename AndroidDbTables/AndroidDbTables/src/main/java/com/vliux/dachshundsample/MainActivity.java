@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
             DbManager.init(getApplicationContext(),new Class[]{SampleTable.class, SampleTableEx.class}, "SampleDb", 5);
             mSampleTable = (SampleTable)DbManager.getsInstance().getTable(SampleTable.class);
             mSampleTableEx = (SampleTableEx)DbManager.getsInstance().getTable(SampleTableEx.class);
-            mSampleTableEx.queryAll();
+            mSampleTableEx.query(null, null);
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
         }
 
         StringBuilder sb = new StringBuilder();
-        List<ContentValues> resultValues = mSampleTable.queryAll();
+        List<ContentValues> resultValues = mSampleTable.query(null, null);
         for(ContentValues cv : resultValues){
             sb.append(cv.toString());
             sb.append("\n");

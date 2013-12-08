@@ -13,10 +13,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DbTable {
+    String tableName() default "";
+
     /**
      * If a table is added at db versoin N, should assign minVersion to N here.
      * Otherwise Dachshund won't be able to detect the newly-added table.
      * @return
      */
-    int minVersion() default 1;
+    int minVersion();
 }

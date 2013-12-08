@@ -1,5 +1,7 @@
 package com.vliux.dachshund.annotation;
 
+import com.vliux.dachshund.DbType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DbField {
-    String columnType() default "TEXT";
+    DbType columnType();
     String defaultValue() default "";
 
     /**

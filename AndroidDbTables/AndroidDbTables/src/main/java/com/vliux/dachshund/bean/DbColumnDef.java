@@ -1,11 +1,13 @@
-package com.vliux.dachshund;
+package com.vliux.dachshund.bean;
+
+import com.vliux.dachshund.DbType;
 
 /**
  * Created by vliux on 12/8/13.
  */
 public class DbColumnDef {
     private String column;
-    private String type;
+    private DbType type;
     private String defaultValue = "";
     private int introducedVersion = -1;
 
@@ -17,11 +19,11 @@ public class DbColumnDef {
         this.column = column;
     }
 
-    public String getType() {
+    public DbType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DbType type) {
         this.type = type;
     }
 
