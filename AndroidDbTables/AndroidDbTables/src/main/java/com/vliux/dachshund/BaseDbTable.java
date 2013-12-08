@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.vliux.dachshund.annotation.DbField;
+import com.vliux.dachshund.annotation.DbTable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -22,16 +23,26 @@ import java.util.Map;
 
 public abstract class BaseDbTable{
     protected final String PRIMARY_COLUMN_NAME = "_id";
+    protected DbTableDef mDbTableDef;
     protected HashMap<String, DbColumnDef> mColumnDefinitions = new HashMap<String, DbColumnDef>();
     private SQLiteOpenHelper mDbHelper;
 
     protected BaseDbTable(SQLiteOpenHelper dbHelper) {
         mDbHelper = dbHelper;
-        initColumns();
+        detectAnnotations();
     }
 
-    protected void initColumns(){
+    protected void detectAnnotations(){
         Class theClass = this.getClass();
+        /* check DbTable annotation */
+        if(theClass.isAnnotationPresent(DbTable.class)){
+            mDbTableDef = new DbTableDef();
+            DbTable dbTableAnnotation = (DbTable) theClass.getAnnotation(DbTable.class);
+            mDbTableDef.setMinVersion(dbTableAnnotation.minVersion());
+            Log.d(DbManager.TAG, String.format("table %s has DbTable annotation, minVersion = %d", getTableName(), mDbTableDef.getMinVersion()));
+        }
+
+        /* check DbField annotations */
         while(true){
             if(null == theClass || theClass.equals(BaseDbTable.class)){
                 break;
@@ -47,7 +58,11 @@ public abstract class BaseDbTable{
                     String columnType = dbField.columnType();
                     String defaultValue = dbField.defaultValue();
                     int minVersion = dbField.minVersion();
-                /* obtain field value as column name*/
+                    if(minVersion <= 0 && null != mDbTableDef){
+                        minVersion = mDbTableDef.getMinVersion();
+                        Log.d(DbManager.TAG, "minVersion invalid from DbField, try to obtain from DbTable, which is " + minVersion);
+                    }
+                    /* obtain field value as column name*/
                     String columnName = null;
                     try {
                         field.setAccessible(true);
@@ -101,37 +116,9 @@ public abstract class BaseDbTable{
         return mColumnDefinitions.values().toArray(new DbColumnDef[0]);
     }
 
-    /*
-    protected void initColumns() {
-        Field[] fields = this.getClass().getFields();
-        for (int i = 0; i < fields.length; i++) {
-            String fieldName = fields[i].getName();
-            if (fieldName.startsWith(DB_COLUMN_PREFIX)) {
-                String[] sects = fieldName.split("_");
-                if (null == sects || sects.length < DB_COLUMN_SECTIONS) {
-                    String msgError = String.format(Locale.US, "DB column definition %s is not in valid format in %s", fieldName, getTableName());
-                    Log.e(getTableName(), msgError);
-                    throw new SQLiteException(msgError);
-                }
-                Integer dbVer = Integer.valueOf(sects[sects.length - 1]);
-                String dbType = sects[sects.length - 2];
-                String dbColumnName = null;
-                try {
-                    dbColumnName = (String) fields[i].get(null);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    throw new SQLiteException(String.format(Locale.US, "Unable to get column name for %s in %s", fieldName, getTableName()));
-                }
-                if (null != dbColumnName && null != dbType) {
-                    DbColumnDef columnDef = new DbColumnDef();
-                    columnDef.setColumn(dbColumnName);
-                    columnDef.setIntroducedVersion(dbVer.intValue());
-                    columnDef.setType(dbType);
-                    mColumnDefinitions.put(dbColumnName, columnDef);
-                }
-            }
-        }
-    }*/
+    public final DbTableDef getTableDefinition(){
+        return mDbTableDef;
+    }
 
     public String getTableName() {
         return getClass().getSimpleName();

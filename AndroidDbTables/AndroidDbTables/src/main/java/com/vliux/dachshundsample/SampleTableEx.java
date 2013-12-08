@@ -4,11 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.vliux.dachshund.BaseDbTable;
 import com.vliux.dachshund.DbColumnDef;
-import com.vliux.dachshund.DbManager;
 import com.vliux.dachshund.annotation.DbField;
 import com.vliux.dachshund.annotation.DbTable;
 
@@ -17,46 +15,18 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by vliux on 12/6/13.
+ * Created by vliux on 12/8/13.
  */
-public class SampleTable extends BaseDbTable {
-    @DbField(columnType = "TEXT", defaultValue = "liuxin", minVersion = 1)
-    private static String columnName = "theName";
+@DbTable(minVersion = 5)
+public class SampleTableEx extends BaseDbTable{
+    @DbField(columnType = "TEXT")
+    private static final String exName = "exName";
 
-    @DbField(columnType = "INTEGER", minVersion = 1)
-    private static String columnAge = "theAge";
+    @DbField(columnType = "INTEGER")
+    private static final String exGrade = "exGrade";
 
-    @DbField(columnType = "TEXT", minVersion = 2)
-    private static String columnDes = "theDesc";
-
-    @DbField(columnType = "TEXT", minVersion = 3)
-    private static String columnExtra = "theExtra";
-
-    public SampleTable(SQLiteOpenHelper dbHelper) {
+    public SampleTableEx(SQLiteOpenHelper dbHelper) {
         super(dbHelper);
-    }
-
-    @Override
-    public void onTableCreated(SQLiteDatabase db) {
-        Log.d(DbManager.TAG, "SampleTable.onTableCreated()");
-        addRandomRow(db);
-    }
-
-    private void addRandomRow(SQLiteDatabase db){
-        Date current = new Date();
-        ContentValues cv = new ContentValues();
-        cv.put(columnName, String.format("name-%s-%s-%s", current.getHours(), current.getMinutes(), current.getSeconds()));
-        cv.put(columnAge, current.getSeconds());
-        //cv.put(columnDes, "some description here");
-        insert(db, cv);
-    }
-
-    public void addRandomRow(){
-        Date current = new Date();
-        ContentValues cv = new ContentValues();
-        cv.put(columnName, String.format("name-%s-%s-%s", current.getHours(), current.getMinutes(), current.getSeconds()));
-        cv.put(columnAge, current.getSeconds());
-        insert(cv);
     }
 
     public List<ContentValues> queryAll(){
@@ -87,5 +57,28 @@ public class SampleTable extends BaseDbTable {
             }
         }
         return retValues;
+    }
+
+    @Override
+    public void onTableCreated(SQLiteDatabase db) {
+        addRandomRow(db);
+    }
+
+    public void addRandomRow(){
+        Date current = new Date();
+        ContentValues cv = new ContentValues();
+        cv.put(exName, String.format("name-%s-%s-%s", current.getHours(), current.getMinutes(), current.getSeconds()));
+        cv.put(exGrade, current.getSeconds());
+        //cv.put(columnDes, "some description here");
+        insert(cv);
+    }
+
+    private void addRandomRow(SQLiteDatabase db){
+        Date current = new Date();
+        ContentValues cv = new ContentValues();
+        cv.put(exName, String.format("name-%s-%s-%s", current.getHours(), current.getMinutes(), current.getSeconds()));
+        cv.put(exGrade, current.getSeconds());
+        //cv.put(columnDes, "some description here");
+        insert(db, cv);
     }
 }

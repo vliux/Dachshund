@@ -13,5 +13,11 @@ import java.lang.annotation.Target;
 public @interface DbField {
     String columnType() default "TEXT";
     String defaultValue() default "";
-    int minVersion() default 1;
+
+    /**
+     * If you don't value minVersion for a field, Dachshund will try to obtain it from DbTable annotation.
+     * Db version should start at 1.
+     * @return
+     */
+    int minVersion() default -1;
 }

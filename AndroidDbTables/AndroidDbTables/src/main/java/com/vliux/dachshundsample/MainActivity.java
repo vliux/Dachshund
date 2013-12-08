@@ -25,6 +25,7 @@ public class MainActivity extends Activity {
     private Button mBtnRefresh;
     private Button mBtnAdd;
     private SampleTable mSampleTable;
+    private SampleTableEx mSampleTableEx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +37,10 @@ public class MainActivity extends Activity {
         mBtnAdd = (Button)findViewById(R.id.btn_add);
 
         try {
-            DbManager.init(getApplicationContext(),new Class[]{SampleTable.class}, "SampleDb", 3);
+            DbManager.init(getApplicationContext(),new Class[]{SampleTable.class, SampleTableEx.class}, "SampleDb", 5);
             mSampleTable = (SampleTable)DbManager.getsInstance().getTable(SampleTable.class);
+            mSampleTableEx = (SampleTableEx)DbManager.getsInstance().getTable(SampleTableEx.class);
+            mSampleTableEx.queryAll();
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
