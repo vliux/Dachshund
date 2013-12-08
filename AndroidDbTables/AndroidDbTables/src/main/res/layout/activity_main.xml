@@ -5,8 +5,29 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/table_db"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="This is an example of Dachshund!"
-        android:textSize="18sp"/>
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="10">
+        <Button
+            android:id="@+id/btn_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Refresh"
+            android:onClick="onClick"/>
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Add ..."
+            android:onClick="onClick"/>
+    </LinearLayout>
 </LinearLayout>
