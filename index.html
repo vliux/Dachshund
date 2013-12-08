@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Dachshund by vliux</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Dachshund</h1>
+        <p>A light-weight framework of Android Sqlite DB, which manages tables creation and version upgrade.</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/vliux/Dachshund" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/vliux/Dachshund/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/vliux/Dachshund/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a name="dachshund" class="anchor" href="#dachshund"><span class="octicon octicon-link"></span></a>Dachshund</h1>
+
+<p>A simple framework of Android Sqlite DB which supports table creation and upgrade.
+Just annoate your class fields as database columns, you get the support of automatic database creation and upgrade.</p>
+
+<p>How to use?
+Step 1. Override BaseDbTable:</p>
+
+<pre><code>public class MyDbTable extends BaseDbTable{
+    @DbField(columnType = "TEXT", defaultValue = "some_value", minVersion = 1)
+    private static String column_username = "userName";
+
+    @DbField(columnType = "INTEGER", defaultValue = "0", minVersion = 2)
+    private static String column_userage = "userAge";
+
+    @Override
+    public void onTableCreated(SQLiteDatabase db){
+        // make initialization after your table is right created
+        // normally you can insert initial rows into table
+    }
+
+    @Override
+    public void onTableUpgraded(SQLiteDatabase db, int oldVer, int newVer){
+        // callback when your db is upgraded from oldVer to newVer
+    }
+
+    // implement your additional logic below
+    public void addSomething(){...}
+}
+</code></pre>
+
+<p>Step 2. Init DbManager:</p>
+
+<pre><code>// here we specify dbVersion is 2, so if your current db versoin is 1, Dachshund will upgrade it to 2 by adding 'userAge' into table MyDbTable
+DbManager dbManager = DbManager.init(getContext().getApplicationContext(), new Class&lt;BaseDbTable&gt;[]{MyDbTable.class}, "myDataBase", 2);
+</code></pre>
+
+<p>Step 3. Use your table:</p>
+
+<pre><code>MyDbTable dbTable = (MyDbTable)dbManager.getTable(MyDbTable.class);
+dbTable.addSomething();
+</code></pre>
+
+<p>Step 4. THAT'S ALL!</p>
+
+<p>Note!
+For upgrade from old version, only new columns are added, not-used columns are not removed.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/vliux">vliux</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
