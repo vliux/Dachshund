@@ -1,17 +1,18 @@
 Dachshund
 =========
 
-A simple framework of Android Sqlite DB which supports table creation and upgrade.
-Just annoate your class fields as database columns, you get the support of automatic database creation and upgrade.
+A ligt-weight framework of Android Sqlite DB, which manages automatic DB tables creation and upgrade.
+On Android development with SQLite, a lot of us have to manually generate SQL strings in onCreate() and onUpgrade(). With this simple framework, just annoate your class fields as database columns, you get your tables created or upgraded in time.
 
 How to use?
 Step 1. Override BaseDbTable:
 
+    @DbTable(tableName = "MyDbTable1", minVersion = 2)
     public class MyDbTable extends BaseDbTable{
-        @DbField(columnType = "TEXT", defaultValue = "some_value", minVersion = 1)
+        @DbField(columnType = "TEXT", defaultValue = "some_value")
         private static String column_username = "userName";
         
-        @DbField(columnType = "INTEGER", defaultValue = "0", minVersion = 2)
+        @DbField(columnType = "INTEGER", defaultValue = "0", minVersion = 3)
         private static String column_userage = "userAge";
 
         @Override
@@ -26,20 +27,21 @@ Step 1. Override BaseDbTable:
         }
         
         // implement your additional logic below
-        public void addSomething(){...}
+        public void addRandom(){ insert(...); ... }
     }
-    
+
+As annotated, the table was added in DB version 2 (minVersion = 2), the column "username" was added in ver 2 also as it derives the value from table; while column "userage" was a new column added in version 3.
+
 Step 2. Init DbManager:
 
-    // here we specify dbVersion is 2, so if your current db versoin is 1, Dachshund will upgrade it to 2 by adding 'userAge' into table MyDbTable
-    DbManager dbManager = DbManager.init(getContext().getApplicationContext(), new Class<BaseDbTable>[]{MyDbTable.class}, "myDataBase", 2);
+    // here we specify dbVersion is 3, so if your current db versoin < 3, Dachshund will upgrade it by adding 'userAge' into table MyDbTable
+    DbManager dbManager = DbManager.init(getContext().getApplicationContext(), 
+        new Class<BaseDbTable>[]{MyDbTable.class}, 
+        "myDataBase", 3);
     
 Step 3. Use your table:
 
     MyDbTable dbTable = (MyDbTable)dbManager.getTable(MyDbTable.class);
-    dbTable.addSomething();
+    dbTable.addRandom(); // while trigger db creation or upgrade here
     
 Step 4. THAT'S ALL!
-
-Note!
-For upgrade from old version, only new columns are added, not-used columns are not removed.
