@@ -9,10 +9,10 @@ Step 1. Override BaseDbTable:
 
     @DbTable(tableName = "MyDbTable1", minVersion = 2)
     public class MyDbTable extends BaseDbTable{
-        @DbField(columnType = "TEXT", defaultValue = "some_value")
+        @DbField(columnType = DbType.TEXT, defaultValue = "some_value")
         private static String column_username = "userName";
         
-        @DbField(columnType = "INTEGER", defaultValue = "0", minVersion = 3)
+        @DbField(columnType = DbType.INTEGER, defaultValue = "0", minVersion = 3)
         private static String column_userage = "userAge";
 
         @Override
