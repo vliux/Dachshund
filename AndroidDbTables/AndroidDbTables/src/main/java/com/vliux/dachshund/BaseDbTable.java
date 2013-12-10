@@ -26,93 +26,14 @@ import java.util.Map;
 public abstract class BaseDbTable{
     public static final String PRIMARY_COLUMN_NAME = "_id";
 
-    protected boolean insert(SQLiteDatabase sqliteDb, ContentValues cv){
-        try{
-            sqliteDb.beginTransaction();
-            long ret = sqliteDb.insert(getTableName(), null, cv);
-            if (ret != -1L) {
-                sqliteDb.setTransactionSuccessful();
-            }
-            return (-1L != ret ? true : false);
-        }catch(SQLiteException e){
-            e.printStackTrace();
-            throw e;
-        }finally {
-            if(null != sqliteDb){
-                sqliteDb.endTransaction();
-            }
-        }
+    private int mId;
+
+    public void setId(int id){
+        mId = id;
     }
 
-    protected boolean insert(ContentValues cv) {
-        SQLiteDatabase sqliteDb = null;
-        try {
-            sqliteDb = mDbHelper.getWritableDatabase();
-            sqliteDb.beginTransaction();
-            long ret = sqliteDb.insert(getTableName(), null, cv);
-            if (ret != -1L) {
-                sqliteDb.setTransactionSuccessful();
-            }
-            return (-1L != ret ? true : false);
-        } catch (SQLiteException ex) {
-            Log.e(getTableName(), ex.toString());
-            throw ex;
-        } finally {
-            if (null != sqliteDb) {
-                sqliteDb.endTransaction();
-            }
-        }
+    public int getId(){
+        return mId;
     }
-
-    protected boolean update(ContentValues cv, String whereClause, String[] whereArgs) {
-        SQLiteDatabase sqliteDb = null;
-        try {
-            sqliteDb = mDbHelper.getWritableDatabase();
-            sqliteDb.beginTransaction();
-            int ret = sqliteDb.update(getTableName(), cv, whereClause, whereArgs);
-            if (ret > 0) {
-                sqliteDb.setTransactionSuccessful();
-            }
-            return (0 < ret ? true : false);
-        } catch (SQLiteException ex) {
-            Log.e(getTableName(), ex.toString());
-            throw ex;
-        } finally {
-            if (null != sqliteDb) {
-                sqliteDb.endTransaction();
-            }
-        }
-    }
-
-    protected boolean delete(String whereClause, String[] whereArgs) {
-        SQLiteDatabase sqliteDb = null;
-        try {
-            sqliteDb = mDbHelper.getWritableDatabase();
-            sqliteDb.beginTransaction();
-            int ret = sqliteDb.delete(getTableName(), whereClause, whereArgs);
-            if (ret > 0) {
-                sqliteDb.setTransactionSuccessful();
-            }
-            return (0 < ret ? true : false);
-        } catch (SQLiteException ex) {
-            Log.e(getTableName(), ex.toString());
-            throw ex;
-        } finally {
-            if (null != sqliteDb) {
-                sqliteDb.endTransaction();
-            }
-        }
-    }
-
-    /**
-     *
-     * @param whereArgs
-     * @param limits
-     * @return list of ContentValues, a ContentValues represents one row.
-     */
-
-
-
-
 }
 

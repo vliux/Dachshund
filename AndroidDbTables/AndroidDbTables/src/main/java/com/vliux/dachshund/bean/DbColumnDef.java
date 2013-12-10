@@ -2,6 +2,8 @@ package com.vliux.dachshund.bean;
 
 import com.vliux.dachshund.DbType;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by vliux on 12/8/13.
  */
@@ -10,6 +12,15 @@ public class DbColumnDef {
     private DbType type;
     private String defaultValue = "";
     private int introducedVersion = -1;
+    private Field field;
+
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+    }
 
     public String getColumn() {
         return column;

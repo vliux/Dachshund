@@ -93,7 +93,7 @@ public final class DbManager {
         return mDbHelper;
     }
 
-    public Field findField(Class tableClass, String fieldName){
+    public Field getField(Class tableClass, String fieldName){
         if(mDbFieldMaps.containsKey(tableClass)){
             return mDbFieldMaps.get(tableClass).get(fieldName);
         }else{
@@ -167,6 +167,7 @@ public final class DbManager {
                         dbColumnDef.setDefaultValue(defaultValue);
                         dbColumnDef.setIntroducedVersion(minVersion);
                         dbColumnDef.setType(columnType);
+                        dbColumnDef.setField(field);
                         columnDefs.put(field, dbColumnDef);
                     }
                 }
