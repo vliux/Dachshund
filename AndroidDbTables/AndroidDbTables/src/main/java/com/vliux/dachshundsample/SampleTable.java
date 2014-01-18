@@ -28,8 +28,8 @@ public class SampleTable extends BaseDbTable {
     @DbField(columnType = DbType.TEXT, minVersion = 3)
     private static String columnExtra = "theExtra";
 
-    public SampleTable(SQLiteOpenHelper dbHelper) {
-        super(dbHelper);
+    public SampleTable(SQLiteOpenHelper dbHelper, DbManager dbManager) {
+        super(dbHelper, dbManager);
     }
 
     @Override

@@ -40,8 +40,8 @@ class DbHelper extends SQLiteOpenHelper {
         Log.d(DbManager.TAG, "onUpgrade()");
         for (BaseDbTable table : mTables) {
             /* if current table is newly added in 'newVer', use CREATE TABLE instead of ALTER TABLE */
-            if(null != table.getTableDefinition()){
-                if(table.getTableDefinition().getMinVersion() >= newVer){
+            if(null != DbManager.getsInstance().getTableDef(table.getClass())){
+                if(DbManager.getsInstance().getTableDef(table.getClass()).getMinVersion() >= newVer){
                     Log.d(DbManager.TAG,
                             String.format("table %s has annotation with minVersion >= %d", table.getTableName(), newVer));
                     String createSql = table.getCreateSql();

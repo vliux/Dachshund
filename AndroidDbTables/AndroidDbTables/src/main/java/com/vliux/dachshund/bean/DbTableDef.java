@@ -1,5 +1,7 @@
 package com.vliux.dachshund.bean;
 
+import java.lang.Class;
+
 /**
  * Created by vliux on 12/8/13.
  */

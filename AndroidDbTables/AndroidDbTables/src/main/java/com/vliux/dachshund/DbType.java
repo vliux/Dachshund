@@ -7,5 +7,6 @@ public enum DbType {
     INTEGER,
     TEXT,
     REAL,
-    BLOB
+    BLOB,
+    FOREIGN_KEY
 }

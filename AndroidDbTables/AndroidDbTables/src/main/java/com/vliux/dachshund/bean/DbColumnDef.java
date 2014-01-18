@@ -10,6 +10,7 @@ public class DbColumnDef {
     private DbType type;
     private String defaultValue = "";
     private int introducedVersion = -1;
+    private Class foreignReferTo = null;
 
     public String getColumn() {
         return column;
@@ -41,5 +42,13 @@ public class DbColumnDef {
 
     public void setIntroducedVersion(int introducedVersion) {
         this.introducedVersion = introducedVersion;
+    }
+
+    public Class getForeignReferTo() {
+        return foreignReferTo;
+    }
+
+    public void setForeignReferTo(Class foreignReferTo) {
+        this.foreignReferTo = foreignReferTo;
     }
 }
