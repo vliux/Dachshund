@@ -12,15 +12,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.vliux.dachshund.annotation.DbField;
-import com.vliux.dachshund.annotation.DbTable;
-import com.vliux.dachshund.annotation.ForeignKey;
 import com.vliux.dachshund.bean.DbColumnDef;
-import com.vliux.dachshund.bean.DbTableDef;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -63,7 +57,7 @@ public abstract class BaseDbTable{
                 String.format(" (%s INTEGER DEFAULT '0' NOT NULL PRIMARY KEY AUTOINCREMENT", PRIMARY_COLUMN_NAME));
         for (String colName : mDbManger.getColumnDefs(getClass()).keySet()) {
             DbColumnDef colDef = mDbManger.getColumnDefs(getClass()).get(colName);
-            if(colDef.getType() == DbType.FOREIGN_KEY){
+            if(colDef.getType() == DbColumnType.FOREIGN_KEY){
                 sb.append(String.format(Locale.US,
                         ",%s INTEGER DEFAULT -1", colDef.getColumn()));
                 sb.append(String.format(Locale.US,
@@ -95,7 +89,7 @@ public abstract class BaseDbTable{
             int columnVer = dbColumnDef.getIntroducedVersion();
             if(columnVer > oldVer && columnVer <= newVer){
                 String sqlStr = null;
-                if(dbColumnDef.getType() == DbType.FOREIGN_KEY){
+                if(dbColumnDef.getType() == DbColumnType.FOREIGN_KEY){
                     sqlStr = String.format("ALTER TABLE %s ADD %s INTEGER DEFAULT -1",
                             getTableName(),
                             dbColumnDef.getColumn());
@@ -237,13 +231,13 @@ public abstract class BaseDbTable{
                 cv.put(PRIMARY_COLUMN_NAME, cursor.getInt(0));
                 for(int i = 0; i < columnDefs.length; i++){
                     DbColumnDef cd = columnDefs[i];
-                    if(DbType.TEXT == cd.getType()){
+                    if(DbColumnType.TEXT == cd.getType()){
                         cv.put(cd.getColumn(), cursor.getString(i + 1));
-                    }else if(DbType.INTEGER == cd.getType()){
+                    }else if(DbColumnType.INTEGER == cd.getType()){
                         cv.put(cd.getColumn(), cursor.getInt(i + 1));
-                    }else if(DbType.REAL == cd.getType()){
+                    }else if(DbColumnType.REAL == cd.getType()){
                         cv.put(cd.getColumn(), cursor.getDouble(i + 1));
-                    }else if(DbType.BLOB == cd.getType()){
+                    }else if(DbColumnType.BLOB == cd.getType()){
                         cv.put(cd.getColumn(), cursor.getBlob(i + 1));
                     }
                 }

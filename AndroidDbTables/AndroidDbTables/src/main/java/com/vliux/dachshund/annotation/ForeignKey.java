@@ -1,5 +1,7 @@
 package com.vliux.dachshund.annotation;
 
+import com.vliux.dachshund.Const;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,5 +20,5 @@ public @interface ForeignKey {
      * Db version should start at 1.
      * @return
      */
-    int minVersion() default -1;
+    int minVersion() default Const.MIN_VER_DEFAULT;
 }

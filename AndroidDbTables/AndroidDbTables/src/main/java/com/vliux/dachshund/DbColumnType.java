@@ -3,7 +3,7 @@ package com.vliux.dachshund;
 /**
  * Created by vliux on 12/8/13.
  */
-public enum DbType {
+public enum DbColumnType {
     INTEGER,
     TEXT,
     REAL,

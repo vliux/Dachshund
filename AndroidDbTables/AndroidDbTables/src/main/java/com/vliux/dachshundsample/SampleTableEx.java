@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.vliux.dachshund.BaseDbTable;
+import com.vliux.dachshund.DbColumnType;
 import com.vliux.dachshund.DbManager;
-import com.vliux.dachshund.DbType;
 import com.vliux.dachshund.annotation.DbField;
 import com.vliux.dachshund.annotation.DbTable;
 import com.vliux.dachshund.annotation.ForeignKey;
@@ -18,10 +18,10 @@ import java.util.Date;
  */
 @DbTable(minVersion = 5)
 public class SampleTableEx extends BaseDbTable{
-    @DbField(columnType = DbType.TEXT)
+    @DbField(columnType = DbColumnType.TEXT)
     private static final String exName = "exName";
 
-    @DbField(columnType = DbType.INTEGER)
+    @DbField(columnType = DbColumnType.INTEGER)
     private static final String exGrade = "exGrade";
 
     @ForeignKey(referTo = SampleTable.class)

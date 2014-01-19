@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.vliux.dachshund.BaseDbTable;
+import com.vliux.dachshund.DbColumnType;
 import com.vliux.dachshund.DbManager;
-import com.vliux.dachshund.DbType;
 import com.vliux.dachshund.annotation.DbField;
 
 import java.util.Date;
@@ -16,16 +16,16 @@ import java.util.Date;
  * Created by vliux on 12/6/13.
  */
 public class SampleTable extends BaseDbTable {
-    @DbField(columnType = DbType.TEXT, defaultValue = "liuxin", minVersion = 1)
+    @DbField(columnType = DbColumnType.TEXT, defaultValue = "liuxin", minVersion = 1)
     private static String columnName = "theName";
 
-    @DbField(columnType = DbType.INTEGER, minVersion = 1)
+    @DbField(columnType = DbColumnType.INTEGER, minVersion = 1)
     private static String columnAge = "theAge";
 
-    @DbField(columnType = DbType.TEXT, minVersion = 2)
+    @DbField(columnType = DbColumnType.TEXT, minVersion = 2)
     private static String columnDes = "theDesc";
 
-    @DbField(columnType = DbType.TEXT, minVersion = 3)
+    @DbField(columnType = DbColumnType.TEXT, minVersion = 3)
     private static String columnExtra = "theExtra";
 
     public SampleTable(SQLiteOpenHelper dbHelper, DbManager dbManager) {

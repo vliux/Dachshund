@@ -152,22 +152,26 @@ public class DbManager {
     private class AnnotationParser{
         public void detectAnnotations(Class tableClass) {
             /* check DbTable annotation */
-            DbTableDef dbTableDef = null;
+            DbTableDef dbTableDef = new DbTableDef();
             if (tableClass.isAnnotationPresent(DbTable.class)) {
-                dbTableDef = new DbTableDef();
                 DbTable dbTableAnnotation = (DbTable) tableClass.getAnnotation(DbTable.class);
                 dbTableDef.setMinVersion(dbTableAnnotation.minVersion());
+                if(dbTableDef.getMinVersion() <= 0) throw new IllegalArgumentException("minVersion of DbTable must > 0");
                 if(TextUtils.isEmpty(dbTableAnnotation.tableName())){
                     dbTableDef.setTableName(tableClass.getSimpleName());
                 }else{
                     dbTableDef.setTableName(dbTableAnnotation.tableName());
                 }
-                mTableDefinitions.put(tableClass, dbTableDef);
                 Log.d(DbManager.TAG, String.format("class %s has DbTable annotation, minVersion = %d", tableClass.getSimpleName(), dbTableDef.getMinVersion()));
+            }else{
+                dbTableDef.setTableName(tableClass.getSimpleName());
+                // minVersion will be assigned after columns are parsed.
             }
+            mTableDefinitions.put(tableClass, dbTableDef);
 
             HashMap<String, DbColumnDef> columnDefHashMap = new HashMap<String, DbColumnDef>();
             Class currentTableClass = tableClass;
+            int tableMinVer = Integer.MAX_VALUE;
             while (true) {
                 if (null == currentTableClass || currentTableClass.equals(BaseDbTable.class)) {
                     break;
@@ -201,17 +205,14 @@ public class DbManager {
                     if (hitMode == HitMode.DB_COLUMN) {
                         Log.d(DbManager.TAG, String.format("field %s has DbField annotation", fieldName));
                         DbField dbField = field.getAnnotation(DbField.class);
-                        DbType columnType = dbField.columnType();
+                        DbColumnType columnType = dbField.columnType();
                         String defaultValue = dbField.defaultValue();
-                        int minVersion = getMinVersion(dbField, dbTableDef);
-                        if (minVersion <= 0) {
-                            throw new IllegalArgumentException(String.format("invalid minVersion %d annotated at field %s",
-                                    minVersion, fieldName));
-                        }
+                        int minVersion = getMinVersion(fieldName, dbField.minVersion(), dbTableDef.getMinVersion());
+
                         dbColumnDef = new DbColumnDef();
                         dbColumnDef.setColumn(columnName);
                         dbColumnDef.setDefaultValue(defaultValue);
-                        dbColumnDef.setIntroducedVersion(dbField.minVersion());
+                        dbColumnDef.setIntroducedVersion(minVersion);
                         dbColumnDef.setType(columnType);
                     } else if (hitMode == HitMode.FOREIGN_KEY) {
                         Log.d(DbManager.TAG, String.format("field %s has ForeignKey annotation", fieldName));
@@ -220,44 +221,43 @@ public class DbManager {
                         if (null == referToClz) {
                             throw new IllegalArgumentException(String.format("invalid foreign key %s defined: referTo is null", fieldName));
                         }
-                        int minVersion = getMinVersion(foreignKey, dbTableDef);
-                        if (minVersion <= 0) {
-                            throw new IllegalArgumentException(String.format("invalid minVersion %d annotated at field %s",
-                                    minVersion, fieldName));
-                        }
+                        int minVersion = getMinVersion(fieldName, foreignKey.minVersion(), dbTableDef.getMinVersion());
 
                         dbColumnDef = new DbColumnDef();
                         dbColumnDef.setColumn(columnName);
-                        dbColumnDef.setType(DbType.FOREIGN_KEY);
+                        dbColumnDef.setType(DbColumnType.FOREIGN_KEY);
                         dbColumnDef.setIntroducedVersion(minVersion);
                         dbColumnDef.setForeignReferTo(referToClz);
                     }
 
                     if (null != dbColumnDef) {
                         columnDefHashMap.put(columnName, dbColumnDef);
+                        if(dbTableDef.getMinVersion() <= 0 &&
+                                dbColumnDef.getIntroducedVersion() > 0 &&
+                                dbColumnDef.getIntroducedVersion() < tableMinVer){
+                            tableMinVer = dbColumnDef.getIntroducedVersion();
+                        }
                     }
                 }
                 currentTableClass = currentTableClass.getSuperclass();
             }
             mTableColumnDefinitions.put(tableClass, columnDefHashMap);
+            if(dbTableDef.getMinVersion() <= 0 && tableMinVer < Integer.MAX_VALUE){
+                dbTableDef.setMinVersion(tableMinVer);
+            }
         }
 
-        private int getMinVersion(DbField dbField, DbTableDef dbTableDef){
-            int minVersion = dbField.minVersion();
-            if (minVersion <= 0 && null != dbTableDef) {
-                minVersion = dbTableDef.getMinVersion();
+        private int getMinVersion(String fieldName, int dbFieldMinVer, int dbTableMinVer){
+            int minVersion = dbFieldMinVer;
+            if (minVersion <= 0 && dbTableMinVer > 0) {
+                minVersion = dbTableMinVer;
                 Log.d(DbManager.TAG,
                         "minVersion invalid from DbField, try to obtain from DbTable, which is " + minVersion);
             }
-            return minVersion;
-        }
 
-        private int getMinVersion(ForeignKey foreignKey, DbTableDef dbTableDef){
-            int minVersion = foreignKey.minVersion();
-            if (minVersion <= 0 && null != dbTableDef) {
-                minVersion = dbTableDef.getMinVersion();
-                Log.d(DbManager.TAG,
-                        "minVersion invalid from DbField, try to obtain from DbTable, which is " + minVersion);
+            if (minVersion <= 0) {
+                throw new IllegalArgumentException(String.format("invalid minVersion %d annotated at field %s",
+                        minVersion, fieldName));
             }
             return minVersion;
         }
