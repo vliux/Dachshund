@@ -21,4 +21,13 @@ public @interface ForeignKey {
      * @return
      */
     int minVersion() default Const.MIN_VER_DEFAULT;
+
+    // TODO: parsing not implemented
+    String defaultValue() default "";
+    OnAction onDelete() default OnAction.RESTRICT;
+    OnAction onUpdate() default OnAction.RESTRICT;
+
+    public enum OnAction{
+        RESTRICT, SET_NULL, SET_DEFAULT, CASCADE
+    }
 }

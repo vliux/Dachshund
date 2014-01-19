@@ -136,13 +136,13 @@ public class DbManager {
             if(null != dbTableDef){
                 name = dbTableDef.getTableName();
             }
+            if(TextUtils.isEmpty(name)){
+                return tableClass.getSimpleName();
+            }else{
+                return name;
+            }
         }
-
-        if(TextUtils.isEmpty(name)){
-            return tableClass.getSimpleName();
-        }else{
-            return name;
-        }
+        return null;
     }
 
     private enum HitMode{

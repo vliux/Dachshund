@@ -38,17 +38,6 @@ public abstract class BaseDbTable{
         return mDbManger.getColumnDefs(getClass()).values().toArray(new DbColumnDef[0]);
     }
 
-    /*
-    public String getTableName() {
-        if(null != mDbTableDef &&
-                null != mDbTableDef.getTableName() &&
-                mDbTableDef.getTableName().length() > 0){
-            return mDbTableDef.getTableName();
-        }else{
-            return getClass().getSimpleName();
-        }
-    }*/
-
     /**
      * @return the SQL string for creating table.
      */
