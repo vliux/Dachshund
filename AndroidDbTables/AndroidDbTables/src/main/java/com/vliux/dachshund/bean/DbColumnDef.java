@@ -1,5 +1,6 @@
 package com.vliux.dachshund.bean;
 
+import com.vliux.dachshund.Const;
 import com.vliux.dachshund.DbColumnType;
 
 /**
@@ -9,8 +10,16 @@ public class DbColumnDef {
     private String column;
     private DbColumnType type;
     private String defaultValue = "";
-    private int introducedVersion = -1;
-    private Class foreignReferTo = null;
+    private int introducedVersion = Const.MIN_VER_DEFAULT;
+    private DbForeignKeyDef foreignKey;
+
+    public DbForeignKeyDef getForeignKey() {
+        return foreignKey;
+    }
+
+    public void setForeignKey(DbForeignKeyDef foreignKey) {
+        this.foreignKey = foreignKey;
+    }
 
     public String getColumn() {
         return column;
@@ -42,13 +51,5 @@ public class DbColumnDef {
 
     public void setIntroducedVersion(int introducedVersion) {
         this.introducedVersion = introducedVersion;
-    }
-
-    public Class getForeignReferTo() {
-        return foreignReferTo;
-    }
-
-    public void setForeignReferTo(Class foreignReferTo) {
-        this.foreignReferTo = foreignReferTo;
     }
 }

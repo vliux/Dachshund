@@ -10,6 +10,7 @@ import com.vliux.dachshund.annotation.DbField;
 import com.vliux.dachshund.annotation.DbTable;
 import com.vliux.dachshund.annotation.ForeignKey;
 import com.vliux.dachshund.bean.DbColumnDef;
+import com.vliux.dachshund.bean.DbForeignKeyDef;
 import com.vliux.dachshund.bean.DbTableDef;
 
 import java.lang.reflect.Constructor;
@@ -206,28 +207,31 @@ public class DbManager {
                         Log.d(DbManager.TAG, String.format("field %s has DbField annotation", fieldName));
                         DbField dbField = field.getAnnotation(DbField.class);
                         DbColumnType columnType = dbField.columnType();
-                        String defaultValue = dbField.defaultValue();
                         int minVersion = getMinVersion(fieldName, dbField.minVersion(), dbTableDef.getMinVersion());
 
                         dbColumnDef = new DbColumnDef();
                         dbColumnDef.setColumn(columnName);
-                        dbColumnDef.setDefaultValue(defaultValue);
+                        dbColumnDef.setDefaultValue(dbField.defaultValue());
                         dbColumnDef.setIntroducedVersion(minVersion);
                         dbColumnDef.setType(columnType);
                     } else if (hitMode == HitMode.FOREIGN_KEY) {
                         Log.d(DbManager.TAG, String.format("field %s has ForeignKey annotation", fieldName));
                         ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
                         Class referToClz = foreignKey.referTo();
-                        if (null == referToClz) {
-                            throw new IllegalArgumentException(String.format("invalid foreign key %s defined: referTo is null", fieldName));
-                        }
+                        if (null == referToClz) throw new IllegalArgumentException(String.format("invalid foreign key %s defined: referTo is null", fieldName));
                         int minVersion = getMinVersion(fieldName, foreignKey.minVersion(), dbTableDef.getMinVersion());
 
+                        DbForeignKeyDef dbForeignKeyDef = new DbForeignKeyDef();
+                        dbForeignKeyDef.setForeignReferTo(referToClz);
+                        dbForeignKeyDef.setOnDelete(foreignKey.onDelete());
+                        dbForeignKeyDef.setOnUpdate(foreignKey.onUpdate());
+
                         dbColumnDef = new DbColumnDef();
+                        dbColumnDef.setForeignKey(dbForeignKeyDef);
                         dbColumnDef.setColumn(columnName);
+                        dbColumnDef.setDefaultValue(foreignKey.defaultValue());
                         dbColumnDef.setType(DbColumnType.FOREIGN_KEY);
                         dbColumnDef.setIntroducedVersion(minVersion);
-                        dbColumnDef.setForeignReferTo(referToClz);
                     }
 
                     if (null != dbColumnDef) {
